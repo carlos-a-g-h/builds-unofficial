@@ -19,6 +19,13 @@ jobs:
       # Runs a single command using the runners shell
       - name: Download and see
         run: |
-          mkdir files
-          wget "${{ inputs.URL }}" -O files/
+          mkdir workspace
+          wget "${{ inputs.URL }}" -O workspace/
           find files/
+      - name: Extract
+        working-directory: workspace
+        run: |
+          FILE=$(ls|tail -n1)
+          tar -xvf "$FILE"
+          rm -v "$FILE"
+          find .
