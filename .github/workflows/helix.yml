@@ -1,5 +1,6 @@
 name: Helix (Debian 11)
 
+# Instead of ubuntu-latest, i'm using ubuntu-20.04 to get a lower version of libc6 and run it on Debian 11 or any other distro with a libc6 that old
 # Based on https://github.com/helix-editor/helix/blob/master/.github/workflows/release.yml
 
 on:
@@ -9,7 +10,8 @@ env:
   MAIN_URL: "https://github.com/helix-editor/helix/archive/refs/tags/23.05.tar.gz"
   NAME_SOURCE: "helix-editor.tar.gz"
   WORKDIR: "helix-23.05"
-  RELEASE_NAME: "helix"
+  REL_NAME: "helix-23.05-debian11-amd64"
+  REL_NAME_TAR: "helix-23.05-debian11-amd64.tar"
 
 jobs:
   fetch-grammars:
@@ -44,7 +46,7 @@ jobs:
           path: "${{ env.WORKDIR }}/grammars.tar.xz"
 
   dist:
-    name: Dist
+    name: Dist and release
     needs: [fetch-grammars]
     env:
       # For some builds, we use cross to test on 32-bit and big-endian
@@ -141,15 +143,37 @@ jobs:
           printf "\n\n[ Contents of 'dist' ]\n"
           find dist
 
-      - name: Run LDD on the binaries
+      - name: Run LDD on all the binaries
         working-directory: ${{ env.WORKDIR }}
         run: |
-          printf "\n[ main executable ]\n"
+          printf "\n[ LDD on the main executable ]\n"
           ldd dist/hx
-          printf "\n[ the grammars ]\n"
+          printf "\n[ LDD on the grammars ]\n"
           ldd dist/runtime/grammars/*
 
-#      - uses: actions/upload-artifact@v3
-#        with:
-#          name: bins-${{ matrix.build }}
-#          path: dist
+      - name: Wrap it up
+        run: |
+          mv -v "${{ env.WORKDIR }}/dist" ${{ env.REL_NAME }}
+          tar -cf ${{ env.REL_NAME_TAR }} ${{ env.REL_NAME }}
+
+      - name: 'Create Github release'
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        with:
+          tag_name: "${{ env.REL_NAME }}"
+          release_name: "${{ env.REL_NAME }}"
+          draft: false
+          prerelease: false
+  
+      - name: 'Add the Linux build to the Github release'
+        if: ${{ inputs.REL == true && inputs.JUSTWIN == false }}
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "${{ env.REL_NAME_TAR }}"
+          asset_name: "${{ env.REL_NAME }}"
+          asset_content_type: application/octet-stream
