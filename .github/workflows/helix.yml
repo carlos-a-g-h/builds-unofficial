@@ -69,7 +69,14 @@ jobs:
           
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v4
+        # uses: actions/checkout@v4
+        run: |
+          wget "${{ env.MAIN_URL }}" -O "${{ env.NAME_SOURCE }}"
+          tar -xvf "${{ env.NAME_SOURCE }}"
+          mv -v $"{{ env.NAME_SOURCE_STEM }}" "_"
+          mv -v _/* ./
+          rm -v "${{ env.NAME_SOURCE }}"
+          rmdir -v "_"
 
       - name: Download grammars
         uses: actions/download-artifact@v3
@@ -111,3 +118,22 @@ jobs:
           [profile.release]
           strip = true
           EOF
+
+      - name: Build release binary
+        run: ${{ env.CARGO }} build --release --locked --target ${{ matrix.target }}
+
+      - name: Build archive
+        shell: bash
+        run: |
+          mkdir -p dist
+          cp "target/${{ matrix.target }}/release/hx" "dist/"
+          if [ -d runtime/grammars/sources ]; then
+            rm -rf runtime/grammars/sources
+          fi
+          cp -r runtime dist
+          find dist
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: bins-${{ matrix.build }}
+          path: dist
