@@ -21,7 +21,7 @@ jobs:
         run: |
           wget "${{ env.MAIN_URL }}" -O "${{ env.NAME_SOURCE }}"
           tar -xvf "${{ env.NAME_SOURCE }}"
-          mv -v helix-23.05/* ./
+          cp -va helix-23.05/* ./
           rm -v "${{ env.NAME_SOURCE }}"
           rm -rf helix-23.05
           printf "\n\n[FILES]\n"
@@ -74,7 +74,7 @@ jobs:
         run: |
           wget "${{ env.MAIN_URL }}" -O "${{ env.NAME_SOURCE }}"
           tar -xvf "${{ env.NAME_SOURCE }}"
-          mv -v helix-23.05/* ./
+          cp -va helix-23.05/* ./
           rm -v "${{ env.NAME_SOURCE }}"
           rm -rf helix-23.05
           printf "\n\n[FILES]\n"
