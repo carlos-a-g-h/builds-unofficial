@@ -168,7 +168,6 @@ jobs:
           prerelease: false
   
       - name: 'Add the Linux build to the Github release'
-        if: ${{ inputs.REL == true && inputs.JUSTWIN == false }}
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
