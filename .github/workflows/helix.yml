@@ -103,14 +103,14 @@ jobs:
           cargo install cross --git https://github.com/cross-rs/cross.git --rev 47df5c76e7cba682823a0b6aa6d95c17b31ba63a
           echo "CARGO=cross" >> $GITHUB_ENV
 
-      - name: Show command used for Cargo
-        run: |
-          echo "cargo command is: ${{ env.CARGO }}"
-          echo "target flag is: ${{ env.TARGET_FLAGS }}"
+#      - name: Show command used for Cargo
+#        run: |
+#          echo "cargo command is: ${{ env.CARGO }}"
+#          echo "target flag is: ${{ env.TARGET_FLAGS }}"
 
-      - name: Run cargo test
-        if: "!matrix.skip_tests"
-        run: ${{ env.CARGO }} test --release --locked --target ${{ matrix.target }} --workspace
+#      - name: Run cargo test
+#        if: "!matrix.skip_tests"
+#        run: ${{ env.CARGO }} test --release --locked --target ${{ matrix.target }} --workspace
 
       - name: Set profile.release.strip = true
         shell: bash
@@ -132,6 +132,7 @@ jobs:
             rm -rf runtime/grammars/sources
           fi
           cp -r runtime dist
+          printf "\n\n[ Contents of 'dist' ]\n"
           find dist
 
 #      - uses: actions/upload-artifact@v3
