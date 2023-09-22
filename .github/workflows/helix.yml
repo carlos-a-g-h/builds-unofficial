@@ -132,7 +132,7 @@ jobs:
           cp -r runtime dist
           find dist
 
-      - uses: actions/upload-artifact@v3
-        with:
-          name: bins-${{ matrix.build }}
-          path: dist
+#      - uses: actions/upload-artifact@v3
+#        with:
+#          name: bins-${{ matrix.build }}
+#          path: dist
