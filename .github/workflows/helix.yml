@@ -8,6 +8,7 @@ on:
 env:
   MAIN_URL: "https://github.com/helix-editor/helix/archive/refs/tags/23.05.tar.gz"
   NAME_SOURCE: "helix-editor.tar.gz"
+  NAME_SOURCE_STEM: "helix-editor"
   RELEASE_NAME: "helix"
 
 jobs:
@@ -20,7 +21,10 @@ jobs:
         run: |
           wget "${{ env.MAIN_URL }}" -O "${{ env.NAME_SOURCE }}"
           tar -xvf "${{ env.NAME_SOURCE }}"
+          mv -v $"{{ env.NAME_SOURCE_STEM }}" "_"
+          mv -v _/* ./
           rm -v "${{ env.NAME_SOURCE }}"
+          rmdir -v "_"
 
       - name: Install stable toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -37,3 +41,29 @@ jobs:
         with:
           name: grammars
           path: grammars.tar.xz
+
+  dist:
+    name: Dist
+    needs: [fetch-grammars]
+    env:
+      # For some builds, we use cross to test on 32-bit and big-endian
+      # systems.
+      CARGO: cargo
+      # When CARGO is set to CROSS, this is set to `--target matrix.target`.
+      TARGET_FLAGS:
+      # When CARGO is set to CROSS, TARGET_DIR includes matrix.target.
+      TARGET_DIR: ./target
+      # Emit backtraces on panics.
+      RUST_BACKTRACE: 1
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false # don't fail other jobs if one fails
+      matrix:
+        build: [x86_64-linux] #, x86_64-win-gnu, win32-msvc
+        include:
+        - build: x86_64-linux
+          os: ubuntu-20.04
+          rust: stable
+          target: x86_64-unknown-linux-gnu
+          cross: false
+          
