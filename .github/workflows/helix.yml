@@ -23,7 +23,9 @@ jobs:
           tar -xvf "${{ env.NAME_SOURCE }}"
           mv -v helix-23.05/* ./
           rm -v "${{ env.NAME_SOURCE }}"
-          rmdir -v helix-23.05
+          rm -rf helix-23.05
+          printf "\n\n[FILES]\n"
+          find .
 
       - name: Install stable toolchain
         uses: dtolnay/rust-toolchain@stable
