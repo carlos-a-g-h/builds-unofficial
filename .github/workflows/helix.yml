@@ -1,0 +1,39 @@
+name: Helix (Debian 11,12)
+
+# Based on https://github.com/helix-editor/helix/blob/master/.github/workflows/release.yml
+
+on:
+  workflow_dispatch:
+
+env:
+  MAIN_URL: "https://github.com/helix-editor/helix/archive/refs/tags/23.05.tar.gz"
+  NAME_SOURCE: "helix-editor.tar.gz"
+  RELEASE_NAME: "helix"
+
+jobs:
+  fetch-grammars:
+    name: Fetch Grammars
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout sources
+        # uses: actions/checkout@v4
+        run: |
+          wget "${{ env.MAIN_URL }}" -O "${{ env.NAME_SOURCE }}"
+          tar -xvf "${{ env.NAME_SOURCE }}"
+          rm -v "${{ env.NAME_SOURCE }}"
+
+      - name: Install stable toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Fetch tree-sitter grammars
+        run: cargo run --package=helix-loader --bin=hx-loader
+
+      - name: Bundle grammars
+        run: tar cJf grammars.tar.xz -C runtime/grammars/sources .
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: grammars
+          path: grammars.tar.xz
