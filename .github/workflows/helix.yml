@@ -1,4 +1,4 @@
-name: Helix (Debian 11,12)
+name: Helix (Debian 11)
 
 # Based on https://github.com/helix-editor/helix/blob/master/.github/workflows/release.yml
 
@@ -140,6 +140,14 @@ jobs:
           cp -r runtime dist
           printf "\n\n[ Contents of 'dist' ]\n"
           find dist
+
+      - name: Run LDD on the binaries
+        working-directory: ${{ env.WORKDIR }}
+        run: |
+          printf "\n[ main executable ]\n"
+          ldd dist/hx
+          printf "\n[ the grammars ]\n"
+          ldd dist/runtime/grammars/*
 
 #      - uses: actions/upload-artifact@v3
 #        with:
