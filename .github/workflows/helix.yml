@@ -8,7 +8,7 @@ on:
 env:
   MAIN_URL: "https://github.com/helix-editor/helix/archive/refs/tags/23.05.tar.gz"
   NAME_SOURCE: "helix-editor.tar.gz"
-  NAME_SOURCE_STEM: "helix-editor"
+  WORKDIR: "helix-23.05"
   RELEASE_NAME: "helix"
 
 jobs:
@@ -21,11 +21,9 @@ jobs:
         run: |
           wget "${{ env.MAIN_URL }}" -O "${{ env.NAME_SOURCE }}"
           tar -xvf "${{ env.NAME_SOURCE }}"
-          cp -va helix-23.05/* ./
           rm -v "${{ env.NAME_SOURCE }}"
-          rm -rf helix-23.05
           printf "\n\n[FILES]\n"
-          find .
+          find ${{ env.WORKDIR }}
 
       - name: Install stable toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -33,15 +31,17 @@ jobs:
       - uses: Swatinem/rust-cache@v2
 
       - name: Fetch tree-sitter grammars
+        working-directory: ${{ env.WORKDIR }}
         run: cargo run --package=helix-loader --bin=hx-loader
 
       - name: Bundle grammars
+        working-directory: ${{ env.WORKDIR }}
         run: tar cJf grammars.tar.xz -C runtime/grammars/sources .
 
       - uses: actions/upload-artifact@v3
         with:
           name: grammars
-          path: grammars.tar.xz
+          path: "${{ env.WORKDIR }}/grammars.tar.xz"
 
   dist:
     name: Dist
@@ -74,21 +74,23 @@ jobs:
         run: |
           wget "${{ env.MAIN_URL }}" -O "${{ env.NAME_SOURCE }}"
           tar -xvf "${{ env.NAME_SOURCE }}"
-          cp -va helix-23.05/* ./
           rm -v "${{ env.NAME_SOURCE }}"
-          rm -rf helix-23.05
           printf "\n\n[FILES]\n"
-          find .
+          find ${{ env.WORKDIR }}
 
       - name: Download grammars
         uses: actions/download-artifact@v3
+        with:
+          path: ${{ env.WORKDIR }}
 
       - name: Move grammars under runtime
+        working-directory: ${{ env.WORKDIR }}
         run: |
           mkdir -p runtime/grammars/sources
           tar xJf grammars/grammars.tar.xz -C runtime/grammars/sources
 
       - name: Remove the rust-toolchain.toml file
+        working-directory: ${{ env.WORKDIR }}
         run: rm rust-toolchain.toml
 
       - name: Install ${{ matrix.rust }} toolchain
@@ -97,11 +99,12 @@ jobs:
           toolchain: ${{ matrix.rust }}
           target: ${{ matrix.target }}
 
-      - name: Install Cross
-        if: "matrix.cross"
-        run: |
-          cargo install cross --git https://github.com/cross-rs/cross.git --rev 47df5c76e7cba682823a0b6aa6d95c17b31ba63a
-          echo "CARGO=cross" >> $GITHUB_ENV
+#      - name: Install Cross
+#        working-directory: ${{ env.WORKDIR }}
+#        if: "matrix.cross"
+#        run: |
+#          cargo install cross --git https://github.com/cross-rs/cross.git --rev 47df5c76e7cba682823a0b6aa6d95c17b31ba63a
+#          echo "CARGO=cross" >> $GITHUB_ENV
 
 #      - name: Show command used for Cargo
 #        run: |
@@ -114,6 +117,7 @@ jobs:
 
       - name: Set profile.release.strip = true
         shell: bash
+        working-directory: ${{ env.WORKDIR }}
         run: |
           cat >> .cargo/config.toml <<EOF
           [profile.release]
@@ -121,10 +125,12 @@ jobs:
           EOF
 
       - name: Build release binary
+        working-directory: ${{ env.WORKDIR }}
         run: ${{ env.CARGO }} build --release --locked --target ${{ matrix.target }}
 
       - name: Build archive
         shell: bash
+        working-directory: ${{ env.WORKDIR }}
         run: |
           mkdir -p dist
           cp "target/${{ matrix.target }}/release/hx" "dist/"
