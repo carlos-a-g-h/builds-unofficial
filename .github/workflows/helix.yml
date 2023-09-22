@@ -82,7 +82,6 @@ jobs:
         uses: actions/download-artifact@v3
 
       - name: Move grammars under runtime
-        if: "!startsWith(matrix.os, 'windows')"
         run: |
           mkdir -p runtime/grammars/sources
           tar xJf grammars/grammars.tar.xz -C runtime/grammars/sources
