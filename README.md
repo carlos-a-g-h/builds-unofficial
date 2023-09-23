@@ -1,9 +1,9 @@
 # Personal builds
 
-## What is this ?
+## What is this?
 
 Unofficial builds and releases of other projects
 
 ## DISCLAIMER
 
-The binary blobs here are not from any official maintainer, use at your own risk
+I am not an oficial maintainer of any of the binary blobs at in this repo. The blobs are for personal usage, use at your own risk
