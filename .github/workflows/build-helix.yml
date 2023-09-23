@@ -1,4 +1,4 @@
-name: Helix (Debian 11)
+name: Helix [Debian 11][lower libc6]
 
 # Instead of ubuntu-latest, i'm using ubuntu-20.04 to get a lower version of libc6 and run it on Debian 11 or any other distro with a libc6 that old
 # Based on https://github.com/helix-editor/helix/blob/master/.github/workflows/release.yml
