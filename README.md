@@ -4,7 +4,7 @@
 
 Unofficial builds and releases of other projects
 
-## WHY
+## Why would you want to do this
 
 There are 2 main reasons why these binaries are being built here
 
@@ -16,4 +16,6 @@ There are 2 main reasons why these binaries are being built here
 
 I am not an oficial maintainer of any of the binaries that are being built here: I am just another end user trying to solve a problem
 
-Use the blobs at your own risk if you will; if you have any doubts you can check the workflows that produced the releases and the blobs
+Use the blobs at your own risk if you will
+
+If you have any doubts you can check the workflows that produced the releases and the blobs
