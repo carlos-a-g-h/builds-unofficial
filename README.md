@@ -4,7 +4,7 @@
 
 Unofficial builds and releases of other projects
 
-## Why would you want to do this
+## Why would you want to do this?
 
 There are 2 main reasons why these binaries are being built here
 
