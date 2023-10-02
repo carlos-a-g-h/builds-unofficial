@@ -6,8 +6,12 @@ Unofficial builds and releases of other projects
 
 ## DISCLAIMER
 
-I am not an oficial maintainer of any of the projects that are being built here
+I am not an oficial maintainer of any of the binaries that are being built here
 
-The binary blobs being released here are mainly for matching specific requirements and dependencies
+There are 2 main reasons why these binaries are being built here
 
-Use them at your own risk; if you have any doubts you can check the workflows that produced the builds
+- Matching specific requirements and system dependencies
+
+- Provide non-existing binaries
+
+Use the blobs at your own risk if you will; if you have any doubts you can check the workflows that produced the releases and the blobs
